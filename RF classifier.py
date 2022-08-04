@@ -11,6 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 import os
 from typing import Counter
+from imblearn.over_sampling import SMOTE
 
 file_path = r"C:\Users\12445\Desktop\magnetite\fill.xlsx"#Please enter the path to the Supplementary table S4
 data = pd.read_excel(file_path)
@@ -23,6 +24,9 @@ y_int, index = pd.factorize(y, sort=True)
 y = y_int
 index
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2)
+X_resampled, y_resampled = SMOTE().fit_resample(X_train, y_train)
+X_train=X_resampled
+y_train=y_resampled
 X_compare = np.log(X_train)
 X_compare = StandardScaler().fit_transform(X_compare)
 models = (RandomForestClassifier(), )
@@ -35,7 +39,9 @@ log_transformer = FunctionTransformer(np.log, validate=True)
 pipe_clf = make_pipeline(log_transformer, StandardScaler(), RandomForestClassifier(oob_score=True, random_state=10, class_weight='balanced'))
 pipe_clf
 
-param_grid={"randomforestclassifier__n_estimators": [220, 240, 260, 280, 300], "randomforestclassifier__max_depth": [10, 15, 20, 25, 30]}
+param_grid={"randomforestclassifier__n_estimators": [130],
+              "randomforestclassifier__max_depth": [18],
+              "randomforestclassifier__min_samples_leaf":range(1,10,1)}
 grid = GridSearchCV(
     pipe_clf, param_grid=param_grid, cv=10, scoring="f1_macro", n_jobs=-1, refit=True
 )
