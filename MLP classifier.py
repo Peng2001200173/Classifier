@@ -11,7 +11,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import cross_val_score
 import os
 from typing import Counter
-
+from imblearn.over_sampling import SMOTE
 file_path = r"C:\Users\12445\Desktop\magnetite\fill.xlsx"#Please enter the path to the Supplementary table S4
 data = pd.read_excel(file_path)
 df = data.loc[:, ["mtype", "Ti", "V", "Mg", "Mn", "Al", "Si", "Zn", "Ga"]]
@@ -23,6 +23,9 @@ y_int, index = pd.factorize(y, sort=True)
 y = y_int
 index
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2)
+X_resampled, y_resampled = SMOTE().fit_resample(X_train, y_train)
+X_train=X_resampled
+y_train=y_resampled
 X_compare = np.log(X_train)
 X_compare = StandardScaler().fit_transform(X_compare)
 models = ( MLPClassifier(alpha=0.1),)
@@ -31,11 +34,16 @@ for clf in models:
     print(f'{scores.mean():2.2f}' + '±' + f'{scores.std():2.2f}')
 
 log_transformer = FunctionTransformer(np.log, validate=True)
-pipe_clf = make_pipeline(log_transformer, StandardScaler(), MLPClassifier(random_state=1,max_iter=100000,hidden_layer_sizes=[20,20,10]))
+pipe_clf = make_pipeline(log_transformer, StandardScaler(), MLPClassifier(random_state=1))
 pipe_clf
 
 alpha_range=np.logspace(-3,3,7,base=2)
-param_grid = {"mlpclassifier__solver": ["lbfgs"], "mlpclassifier__activation":["tanh"], "mlpclassifier__alpha": alpha_range}
+param_grid = {"mlpclassifier__hidden_layer_sizes": [(50,50,20)],
+             "mlpclassifier__solver": ['adam'],
+             "mlpclassifier__max_iter": [1000],
+             "mlpclassifier__verbose": [True],
+             "mlpclassifier__activation":["tanh"],
+             "mlpclassifier__alpha": alpha_range}
 grid = GridSearchCV(
     pipe_clf, param_grid=param_grid, cv=10, scoring="f1_macro", n_jobs=-1, refit=True
 )
