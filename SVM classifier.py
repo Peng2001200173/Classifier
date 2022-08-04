@@ -13,6 +13,7 @@ from sklearn import svm
 from sklearn.model_selection import cross_val_score
 import os
 from typing import Counter
+from imblearn.over_sampling import SMOTE
 
 file_path = r"C:\Users\12445\Desktop\magnetite\fill.xlsx"#Please enter the path to the Supplementary table S4
 data = pd.read_excel(file_path)
@@ -25,6 +26,9 @@ y_int, index = pd.factorize(y, sort=True)
 y = y_int
 index
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2)
+X_resampled, y_resampled = SMOTE().fit_resample(X_train, y_train)
+X_train=X_resampled
+y_train=y_resampled
 X_compare = np.log(X_train)
 X_compare = StandardScaler().fit_transform(X_compare)
 C = 1
