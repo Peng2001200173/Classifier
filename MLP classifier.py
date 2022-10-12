@@ -12,7 +12,7 @@ from sklearn.model_selection import cross_val_score
 import os
 from typing import Counter
 from imblearn.over_sampling import SMOTE
-file_path = r"C:\Users\12445\Desktop\magnetite\fill.xlsx"#Please enter the path to the Supplementary table S4
+file_path = r"C:\Users\12445\Desktop\magnetite\fill.xlsx"#Please enter the path to the Supplementary Material 4
 data = pd.read_excel(file_path)
 df = data.loc[:, ["mtype", "Ti", "V", "Mg", "Mn", "Al", "Si", "Zn", "Ga"]]
 
@@ -26,12 +26,11 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 X_resampled, y_resampled = SMOTE().fit_resample(X_train, y_train)
 X_train=X_resampled
 y_train=y_resampled
-models = ( MLPClassifier(alpha=0.1),)
+models = (MLPClassifier(alpha=0.1),)
 for clf in models:
     scores = cross_val_score(clf, X_train, y_train, cv=5, scoring='f1_macro', n_jobs=-1)
     print(f'{scores.mean():2.2f}' + '±' + f'{scores.std():2.2f}')
 
-log_transformer = FunctionTransformer(np.log, validate=True)
 pipe_clf = make_pipeline(MLPClassifier(random_state=1))
 pipe_clf
 
