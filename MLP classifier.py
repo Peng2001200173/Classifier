@@ -26,22 +26,19 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 X_resampled, y_resampled = SMOTE().fit_resample(X_train, y_train)
 X_train=X_resampled
 y_train=y_resampled
-X_compare = np.log(X_train)
-X_compare = StandardScaler().fit_transform(X_compare)
 models = ( MLPClassifier(alpha=0.1),)
 for clf in models:
-    scores = cross_val_score(clf, X_compare, y_train, cv=5, scoring='f1_macro', n_jobs=-1)
+    scores = cross_val_score(clf, X_train, y_train, cv=5, scoring='f1_macro', n_jobs=-1)
     print(f'{scores.mean():2.2f}' + '±' + f'{scores.std():2.2f}')
 
 log_transformer = FunctionTransformer(np.log, validate=True)
-pipe_clf = make_pipeline(log_transformer, StandardScaler(), MLPClassifier(random_state=1))
+pipe_clf = make_pipeline(MLPClassifier(random_state=1))
 pipe_clf
 
 alpha_range=np.logspace(-3,3,7,base=2)
-param_grid = {"mlpclassifier__hidden_layer_sizes": [(50,50,20)],
+param_grid = {"mlpclassifier__hidden_layer_sizes": [(20,20,10)],
              "mlpclassifier__solver": ['adam'],
              "mlpclassifier__max_iter": [1000],
-             "mlpclassifier__verbose": [True],
              "mlpclassifier__activation":["tanh"],
              "mlpclassifier__alpha": alpha_range}
 grid = GridSearchCV(
@@ -102,7 +99,7 @@ ax.set_xlabel("Predictions", fontsize=8)
 ax.set_ylabel("True labels", fontsize=8)
 plt.xticks(rotation=45)
 plt.tight_layout()
-f.savefig(r'C:\Users\12445\Desktop\./confusion_matrix_MLP.tiff', dpi=600)
+f.savefig(r'C:\Users\12445\Desktop\./confusion_matrix_MLP.svg', dpi=600)
 f.savefig(r'C:\Users\12445\Desktop\./confusion_matrix_MLP.pdf', dpi=600)
 
 print(
