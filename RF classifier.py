@@ -13,7 +13,7 @@ import os
 from typing import Counter
 from imblearn.over_sampling import SMOTE
 
-file_path = r"C:\Users\12445\Desktop\magnetite\fill.xlsx"#Please enter the path to the Supplementary table S4
+file_path = r"C:\Users\12445\Desktop\magnetite\fill.xlsx"#Please enter the path to the Supplementary Material 4
 data = pd.read_excel(file_path)
 df = data.loc[:, ["mtype", "Ti", "V", "Mg", "Mn", "Al", "Si", "Zn", "Ga"]]
 
