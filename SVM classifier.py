@@ -15,7 +15,7 @@ import os
 from typing import Counter
 from imblearn.over_sampling import SMOTE
 
-file_path = r"C:\Users\12445\Desktop\magnetite\fill.xlsx"#Please enter the path to the Supplementary table S4
+file_path = r"C:\Users\12445\Desktop\magnetite\fill.xlsx"#Please enter the path to the Supplementary Material 4
 data = pd.read_excel(file_path)
 df = data.loc[:, ["mtype", "Ti", "V", "Mg", "Mn", "Al", "Si", "Zn", "Ga"]]
 
@@ -29,19 +29,16 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 X_resampled, y_resampled = SMOTE().fit_resample(X_train, y_train)
 X_train=X_resampled
 y_train=y_resampled
-X_compare = np.log(X_train)
-X_compare = StandardScaler().fit_transform(X_compare)
 C = 1
 models = (
           svm.SVC(kernel='linear', C=C, class_weight=None),
           svm.SVC(kernel='rbf', C=C), #, class_weight='balanced'),
          )
 for clf in models:
-    scores = cross_val_score(clf, X_compare, y_train, cv=5, scoring='f1_macro', n_jobs=-1)
+    scores = cross_val_score(clf, X_train, y_train, cv=5, scoring='f1_macro', n_jobs=-1)
     print(f'{scores.mean():2.2f}' + '±' + f'{scores.std():2.2f}')
 
-log_transformer = FunctionTransformer(np.log, validate=True)
-pipe_clf = make_pipeline(log_transformer, StandardScaler(), SVC(cache_size=1000, class_weight=None, probability=True))
+pipe_clf = make_pipeline(SVC(cache_size=1000, class_weight=None, probability=True))
 pipe_clf    
 class MidpointNormalize(Normalize):
     def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
@@ -51,8 +48,8 @@ class MidpointNormalize(Normalize):
     def __call__(self, value, clip=None):
         x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
         return np.ma.masked_array(np.interp(value, x, y))
-C_range = np.logspace(-2, 10, 13, base=10)
-gamma_range = np.logspace(-7, 4, 12, base=10)
+C_range = np.logspace(-2, 5, 8, base=10)
+gamma_range = np.logspace(-7, -2, 6, base=2)
 param_grid = {"svc__kernel": ["rbf"], "svc__gamma": gamma_range, "svc__C": C_range}
 cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=2)
 print(C_range)
@@ -138,7 +135,7 @@ ax.set_ylabel("True labels")
 plt.xticks(rotation=45)
 plt.tight_layout()
 # f.suptitle('Fig. 5', x=0.05)
-f.savefig(r'C:\Users\12445\Desktop\./confusion_matrix_SVM.tiff', dpi=600)
+f.savefig(r'C:\Users\12445\Desktop\./confusion_matrix_SVM.svg', dpi=600)
 f.savefig(r'C:\Users\12445\Desktop\./confusion_matrix_SVM.pdf', dpi=600)
 
 print(
