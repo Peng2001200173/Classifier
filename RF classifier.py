@@ -27,21 +27,19 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 X_resampled, y_resampled = SMOTE().fit_resample(X_train, y_train)
 X_train=X_resampled
 y_train=y_resampled
-X_compare = np.log(X_train)
-X_compare = StandardScaler().fit_transform(X_compare)
 models = (RandomForestClassifier(), )
 
 for clf in models:
-    scores = cross_val_score(clf, X_compare, y_train, cv=5, scoring='f1_macro', n_jobs=-1)
+    scores = cross_val_score(clf, X_train, y_train, cv=5, scoring='f1_macro', n_jobs=-1)
     print(f'{scores.mean():2.2f}' + '±' + f'{scores.std():2.2f}')
     
-log_transformer = FunctionTransformer(np.log, validate=True)
-pipe_clf = make_pipeline(log_transformer, StandardScaler(), RandomForestClassifier(oob_score=True, random_state=10, class_weight='balanced'))
+pipe_clf = make_pipeline(RandomForestClassifier(oob_score=True, random_state=10, class_weight='balanced'))
 pipe_clf
 
 param_grid={"randomforestclassifier__n_estimators": [130],
-              "randomforestclassifier__max_depth": [18],
-              "randomforestclassifier__min_samples_leaf":range(1,10,1)}
+            "randomforestclassifier__max_depth": [11],
+            "randomforestclassifier__min_samples_leaf":[3]
+            "randomforestclassifier__min_samples_split":[5]}
 grid = GridSearchCV(
     pipe_clf, param_grid=param_grid, cv=10, scoring="f1_macro", n_jobs=-1, refit=True
 )
@@ -61,13 +59,14 @@ features = list(X_test.columns)
 feature_importances = grid.best_estimator_._final_estimator.feature_importances_
 indices = np.argsort(feature_importances)[::-1]
 num_features = len(feature_importances)
-plt.rc('font',family='Times New Roman',size=12)
-plt.figure()
-plt.title("Feature importances")
+plt.rc('font',family='Times New Roman',size=8)
+plt.figure(figsize=(3.35, 2.756))
+plt.title("Feature importances",size=8)
 plt.bar(range(num_features), feature_importances[indices], color="grey", align="center")
-plt.xticks(range(num_features), [features[i] for i in indices], rotation='45')
+plt.xticks(range(num_features), [features[i] for i in indices], rotation='45',size=8)
 plt.xlim([-1, num_features])
 plt.show()
+plt.savefig(r'C:\Users\12445\Desktop\./feature importances.svg', dpi=600)
 for i in indices:
     print ("{0} - {1:.3f}".format(features[i], feature_importances[i]))
 
@@ -117,7 +116,7 @@ ax.set_xlabel("Predictions", fontsize=8)
 ax.set_ylabel("True labels", fontsize=8)
 plt.xticks(rotation=45)
 plt.tight_layout()
-f.savefig(r'C:\Users\12445\Desktop\./confusion_matrix_RF.tiff', dpi=600)
+f.savefig(r'C:\Users\12445\Desktop\./confusion_matrix_RF.svg', dpi=600)
 f.savefig(r'C:\Users\12445\Desktop\./confusion_matrix_RF.pdf', dpi=600)
 
 print(
