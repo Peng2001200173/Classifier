@@ -12,7 +12,7 @@ from sklearn.model_selection import cross_val_score
 import os
 from typing import Counter
 from imblearn.over_sampling import SMOTE
-file_path = r"C:\Users\12445\Desktop\magnetite\fill.xlsx"#Please enter the path to the Supplementary Material 4
+file_path = r"C:\Users\12445\Desktop\magnetite\fill.xlsx"#Please enter the path to the Supplementary Material 2
 data = pd.read_excel(file_path)
 df = data.loc[:, ["mtype", "Ti", "V", "Mg", "Mn", "Al", "Si", "Zn", "Ga"]]
 
