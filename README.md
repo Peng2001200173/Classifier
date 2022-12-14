@@ -1,5 +1,6 @@
 # Classifier
-There are the Supplementary Materials for the article, which is cited as "Zhang, P., Zhang, Z., Yang, J., Cheng, Q., 2022. Machine Learning Prediction of Ore Deposit Genetic Type Using Magnetite Geochemistry. Natural Resources Research. https://doi.org/10.1007/s11053-022-10146-4".
+There are the codes of the article, the cite of which is "Zhang, P., Zhang, Z., Yang, J., Cheng, Q., 2022. Machine Learning Prediction of Ore Deposit Genetic Type Using Magnetite Geochemistry. Natural Resources Research. https://doi.org/10.1007/s11053-022-10146-4".
+
 Program name: MLP Classifier, RF classifier, SVM classifier.
 
 Instruction guide
